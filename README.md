@@ -23,6 +23,7 @@ Before starting the setup, make sure you have the following:
 
 # Architecture Overview
 
+```bash
 GitHub Workflow
       │
       ▼
@@ -42,6 +43,8 @@ Temporary AWS Credentials
       │
       ▼
 AWS Services (EC2, EKS, etc.)
+
+```
 
 ---
 
@@ -157,73 +160,13 @@ arn:aws:iam::123456789012:role/github-actions-role
 
 Save the secret.
 
----
+Step 7 - Push the code on Githib and check actions 
 
-# Example GitHub Actions Workflow
 
-Create a workflow file:
 
-.github/workflows/aws-oidc.yml
-
-```yaml
-name: Test OIDC Authentication
-
-on:
-  workflow_dispatch:
-
-permissions:
-  id-token: write
-  contents: read
-
-jobs:
-  list-ec2:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Configure AWS credentials using OIDC
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
-        aws-region: us-west-2
-
-    - name: Verify AWS identity
-      run: aws sts get-caller-identity
-
-    - name: List EC2 Instances
-      run: |
-        aws ec2 describe-instances         --query "Reservations[*].Instances[*].InstanceId"         --output table
-```
 
 ---
 
-# Workflow Execution
-
-When the workflow runs, the following process occurs:
-
-GitHub Actions Workflow
-        │
-        ▼
-Request OIDC Token
-        │
-        ▼
-GitHub OIDC Provider
-        │
-        ▼
-AWS STS Validate Token
-        │
-        ▼
-Assume IAM Role
-        │
-        ▼
-Temporary AWS Credentials Issued
-        │
-        ▼
-Workflow Executes AWS Commands
-
----
 
 # Benefits of Using OIDC
 
@@ -235,8 +178,3 @@ Workflow Executes AWS Commands
 
 ---
 
-# Conclusion
-
-Using **OIDC authentication with GitHub Actions and AWS** allows secure and scalable CI/CD pipelines by removing the need for static AWS credentials and replacing them with **temporary tokens issued during workflow execution**.
-
-This approach is considered a **best practice for modern DevOps workflows**.
